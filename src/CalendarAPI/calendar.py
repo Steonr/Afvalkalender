@@ -81,6 +81,26 @@ class google_calendar:
             date_1 += timedelta(days=period)
             shiftenExcel.append(name)
         return dates, shiftenExcel
+    def create_monthCycle(self, name, startDate, endDate, startCycle, period, extend_period):
+        date_startDate = date(startCycle[0], startCycle[1], startCycle[2])
+        date_endDate = date(endDate[0], endDate[1], endDate[2])
+        startDate = date(startDate[0], startDate[1], startDate[2])
+        dates = []
+        shiftenExcel = []
+        date_1 = date_startDate
+        d = math.ceil((abs(date_endDate-date_startDate).days+1)/period)
+        prev_month = ""
+        date_1 = startDate
+        for i in range(d):
+                if prev_month != date_1.strftime("%m"):
+                    dates.append([int(date_1.strftime("%d")), maanden[date_1.strftime("%m")],date_1.strftime("%Y")])
+                    prev_month = date_1.strftime("%m")
+                else:
+                    date_1 += timedelta(days=extend_period)
+                    dates.append([int(date_1.strftime("%d")), maanden[date_1.strftime("%m")],date_1.strftime("%Y")])
+                date_1 += timedelta(days=period)
+                shiftenExcel.append(name)        
+        return dates, shiftenExcel
     def writeCycleToCalendar(self):
         #If there's no token, it will be created bij the authorization function
         print("Token bein checked...\n")

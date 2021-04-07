@@ -13,7 +13,7 @@ period_HUISVUIL = 14
 beschrijving_HUISVUIL = "HUISVUIL"
 
 name_Papier = "Papier & Karton"
-startDate_PAPIER = [2021,1, 8]
+startDate_PAPIER = [2021,1, 7]
 startCycle_PAPIER = [2021, 1, 7]
 
 endDate = [2021, 12, 31]
@@ -78,3 +78,5 @@ maanden = {
 
 #TestCalendar:
 testCalendar = 'bod8vmio41s81joko6gg8fqea0@group.calendar.google.com'
+#AfvalCalendar:
+afvalKalender = 'jomrec6vro29s53qd345s712ao@group.calendar.google.com'
