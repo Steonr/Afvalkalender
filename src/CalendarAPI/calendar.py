@@ -4,6 +4,7 @@ THIS_FOLDER = os.path.dirname(THIS_FOLDER)
 THIS_FOLDER = os.path.dirname(THIS_FOLDER)
 #Append the main directory to system path --> otherwise importing the modules is not possible
 sys.path.append(THIS_FOLDER)
+import math
 import pickle
 import datetime
 from config import *
@@ -35,13 +36,13 @@ class google_calendar:
             dateTimes = convertTo_isoformat(dateEvent[2], months[dateEvent[1]], dateEvent[0], startHour, endHour)               
             data.append([self.shiftenExcel[i], locatie, colorID, dateTimes[0], dateTimes[1]])        
         return data
-    def createEvents(self, datesExcel, shiftenExcel):
+    def createEvents(self, datesExcel, shiftenExcel, beschrijving):
         self.datesExcel = datesExcel
         self.shiftenExcel = shiftenExcel
         self.data = self.__prepEventData__()
         events = []
         for i in range(len(self.data)):
-            events.append(createEvent(self.data[i][0], self.data[i][1], self.data[i][2], self.data[i][3], self.data[i][4], ""))
+            events.append(createEvent(self.data[i][0], self.data[i][1], self.data[i][2], self.data[i][3], self.data[i][4], beschrijving))
         self.events = events
         return self.events
     def writeEventsToCalendar(self, datesExcel, shiftenExcel):
@@ -66,76 +67,20 @@ class google_calendar:
         for event in events:
             start = event['start'].get('dateTime', event['start'].get('date'))
         return events
-    #Generates cycle pattern. Can be used when there is a defined pattern to put in a calendar.
-    def cycleGen(self):
-        self.cycleList = []
-        for i in range(7):
-                shift = "Nacht"
-                self.cycleList.append([shift, shiftenGerben[shift]["kleur"], shiftenGerben[shift]["hourStart"], shiftenGerben[shift]["hourEnd"]])
-        for i in range(3):
-                shift = "Vrij"
-                self.cycleList.append([shift, shiftenGerben[shift]["kleur"], shiftenGerben[shift]["hourStart"], shiftenGerben[shift]["hourEnd"]])
-        for i in range(7):
-                shift = "Late"
-                self.cycleList.append([shift, shiftenGerben[shift]["kleur"], shiftenGerben[shift]["hourStart"], shiftenGerben[shift]["hourEnd"]])
-        for i in range(2):
-                shift = "Vrij"
-                self.cycleList.append([shift, shiftenGerben[shift]["kleur"], shiftenGerben[shift]["hourStart"], shiftenGerben[shift]["hourEnd"]])
-        for i in range(7):
-                shift = "Vroege"
-                self.cycleList.append([shift, shiftenGerben[shift]["kleur"], shiftenGerben[shift]["hourStart"], shiftenGerben[shift]["hourEnd"]])
-        for i in range(2):
-                shift = "Vrij"
-                self.cycleList.append([shift, shiftenGerben[shift]["kleur"], shiftenGerben[shift]["hourStart"], shiftenGerben[shift]["hourEnd"]])
-        for j in range(4):
-            for i in range(5):
-                    shift = "Dag"
-                    self.cycleList.append([shift, shiftenGerben[shift]["kleur"], shiftenGerben[shift]["hourStart"], shiftenGerben[shift]["hourEnd"]])
-            for i in range(2):
-                    shift = "Vrij"
-                    self.cycleList.append([shift, shiftenGerben[shift]["kleur"], shiftenGerben[shift]["hourStart"], shiftenGerben[shift]["hourEnd"]])
-        return self.cycleList
-    #cycle_createEvents doesn't use shiftenExcel and datesExcel
-    def cycle_createEvents(self, startDate, endDate, beginCycle, tekst):
-        self.cycleList = self.cycleGen()
-        #Number of days
-        d = abs(endDate-startDate).days+1
-        #Number where cycle begins
-        cycleNum = abs(startDate - beginCycle).days
-        j = cycleNum
-        if cycleNum > len(self.cycleList) - 1:
-            #When cycle is used more than once --> check new cyclenumber
-            j = cycleNum % len(self.cycleList)
-
-        
-        data = []
-        events = []
+    def createCycle(self, name, startDate, endDate, startCycle, period):
+        date_startDate = date(startCycle[0], startCycle[1], startCycle[2])
+        date_endDate = date(endDate[0], endDate[1], endDate[2])
+        startDate = date(startDate[0], startDate[1], startDate[2])
+        dates = []
+        shiftenExcel = []
+        date_1 = date_startDate
+        d = math.ceil((abs(date_endDate-date_startDate).days+1)/period)
         for i in range(d):
-            data.append([])
-            #Check if cycle has to run again:
-            if j > len(self.cycleList)-1: 
-                j = 0
-            #Check the date of the shift:
-            shiftDate = startDate + timedelta(days=i)
-            
-            #Shiftname:
-            data[i].append(self.cycleList[j][0])
-            #Shiftcolor:
-            data[i].append(self.cycleList[j][1])
-            #Start hour in RFC3339 format
-            data[i].append(shiftDate.strftime("%Y-%m-%d")+'T'+self.cycleList[j][2]) 
-            #End hour in RFC3339 format
-            if self.cycleList[j][0] == "Nacht":
-                    endshiftDate = startDate + timedelta(days=i+1)
-                    data[i].append(endshiftDate.strftime("%Y-%m-%d")+'T'+self.cycleList[j][3])
-            else:
-                    data[i].append(shiftDate.strftime("%Y-%m-%d")+'T'+self.cycleList[j][3]) 
-            #Make an event for the right shift --> google Calendar format
-            events.append(createEvent(data[i][0], 'Exxonmobil, Meerhout', data[i][1], data[i][2], data[i][3], tekst))
-            j +=1
-        self.events = events
-        return self.events
-
+            if date_1 >= startDate:
+                dates.append([int(date_1.strftime("%d")), maanden[date_1.strftime("%m")],date_1.strftime("%Y")])
+            date_1 += timedelta(days=period)
+            shiftenExcel.append(name)
+        return dates, shiftenExcel
     def writeCycleToCalendar(self):
         #If there's no token, it will be created bij the authorization function
         print("Token bein checked...\n")

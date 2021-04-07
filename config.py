@@ -1,4 +1,22 @@
-locatie = "Tessenderlo"
+locatie = "3980, Tessenderlo, Kolmen 35"
+
+name_PMD = "PMD + GFT"
+startDate_PMD = [2021,1, 15]
+startCycle_PMD = [2021, 1, 15]
+period_PMD = 14
+beschrijving_PMD = "PMD"
+
+name_HUISVUIL = "Huisvuil"
+startDate_HUISVUIL = [2021,1, 8]
+startCycle_HUISVUIL = [2021, 1, 8]
+period_HUISVUIL = 14
+beschrijving_HUISVUIL = "HUISVUIL"
+
+name_Papier = "Papier & Karton"
+startDate_PAPIER = [2021,1, 8]
+startCycle_PAPIER = [2021, 1, 7]
+
+endDate = [2021, 12, 31]
 
 shiften = { "Huisvuil" : {
             "startUur" : "06:00",
